@@ -22,9 +22,11 @@ namespace GridLookUpEdit_FilterWithEditValue
         public Form1()
         {
             InitializeComponent();
-            //实体测试
+
+            //【两种数据源的测试】
+            //1、实体集合测试
             //bindingSourcePersons.DataSource =new BindingList<Person>(GetList());
-            //database测试
+            //2、database测试
             bindingSourcePersons.DataSource = GetDataTable();
 
             _selectPersons = new BindingList<SelectPerson>()
@@ -52,32 +54,41 @@ namespace GridLookUpEdit_FilterWithEditValue
 
         //设置根据多列筛选功能
         //GridLoolUpEdit 默认 是根据 DisplayMember 绑定的字段 进行模糊筛选。
-        private void gridLookUpEdit1_EditValueChanging(object sender, DevExpress.XtraEditors.Controls.ChangingEventArgs e)
+        private void gridLookUpEdit1_EditValueChanging(object sender,
+            DevExpress.XtraEditors.Controls.ChangingEventArgs e)
         {
-            BeginInvoke(new MethodInvoker(delegate ()
+            BeginInvoke(new MethodInvoker(delegate()
             {
                 GridLookUpEdit edit = sender as GridLookUpEdit;
                 GridView gridView = edit.Properties.View as GridView;
                 //获取GriView私有变量
-                FieldInfo fi = gridView.GetType().GetField("extraFilter", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo fi = gridView.GetType()
+                    .GetField("extraFilter", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 List<FunctionOperator> columnsOperators = new List<FunctionOperator>();
                 foreach (GridColumn col in gridView.VisibleColumns)
                 {
                     if (col.Visible && col.ColumnType == typeof(string))
-                        columnsOperators.Add(new DevExpress.Data.Filtering.FunctionOperator(DevExpress.Data.Filtering.FunctionOperatorType.Contains,
-                            new DevExpress.Data.Filtering.OperandProperty(col.FieldName), new DevExpress.Data.Filtering.OperandValue(edit.Text)));
+                        columnsOperators.Add(new DevExpress.Data.Filtering.FunctionOperator(
+                            DevExpress.Data.Filtering.FunctionOperatorType.Contains,
+                            new DevExpress.Data.Filtering.OperandProperty(col.FieldName),
+                            new DevExpress.Data.Filtering.OperandValue(edit.Text)));
                 }
+
                 string filterCondition = new GroupOperator(GroupOperatorType.Or, columnsOperators).ToString();
 
                 //或者明确指定列
                 //BinaryOperator op1 = new BinaryOperator("Id", "%" + edit.AutoSearchText + "%", BinaryOperatorType.Like);
                 //BinaryOperator op2 = new BinaryOperator("Model", "%" + edit.AutoSearchText + "%", BinaryOperatorType.Like);
                 //string filterCondition = new GroupOperator(GroupOperatorType.Or, new CriteriaOperator[] { op1, op2, op3 }).ToString();
+                //https://www.devexpress.com/support/center/question/details/t313960
+                //new FunctionOperator("Like", new OperandProperty("YourFieldName"), new OperandValue(YourFieldValue))
+                //Make the BinaryOperatorType.Like operator obsolete
 
                 fi.SetValue(gridView, filterCondition);
                 //获取GriView中处理列过滤的私有方法
-                MethodInfo mi = gridView.GetType().GetMethod("ApplyColumnsFilterEx", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo mi = gridView.GetType()
+                    .GetMethod("ApplyColumnsFilterEx", BindingFlags.NonPublic | BindingFlags.Instance);
                 mi.Invoke(gridView, null);
             }));
         }
@@ -88,7 +99,13 @@ namespace GridLookUpEdit_FilterWithEditValue
             for (int i = 0; i < 20; i++)
             {
                 //list.Add(new Person() {Id = i, Address = "Address" + i, Code = "Code0" + i, Name = "Name" + i});
-                list.Add(new Person() { Id = i, Address = Util.Str(10,true), Code = Util.Str(10, true), Name = "Name"+ Util.Str(5, true) });
+                list.Add(new Person()
+                {
+                    Id = i,
+                    Address = Util.Str(10, true), 
+                    Code = Util.Str(10, true), 
+                    Name = "Name" + Util.Str(5, true)
+                });
             }
 
             return list;
@@ -120,11 +137,11 @@ namespace GridLookUpEdit_FilterWithEditValue
 
 
             //双击显示下拉列表
-            gridLookUpEdit1.Properties.ShowDropDown = ShowDropDown.DoubleClick;//双击显示下拉列表
-            gridLookUpEdit1.Properties.ImmediatePopup = true;//显示下拉列表
+            gridLookUpEdit1.Properties.ShowDropDown = ShowDropDown.DoubleClick; //双击显示下拉列表
+            gridLookUpEdit1.Properties.ImmediatePopup = true; //显示下拉列表
             gridLookUpEdit1.Properties.AutoComplete = false;
-            gridLookUpEdit1.Properties.TextEditStyle = TextEditStyles.Standard;//允许输入
-            gridLookUpEdit1.Properties.NullText = "";//清空默认值
+            gridLookUpEdit1.Properties.TextEditStyle = TextEditStyles.Standard; //允许输入
+            gridLookUpEdit1.Properties.NullText = ""; //清空默认值
             gridLookUpEdit1.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             //显示不显示grid上第一个空行,也是用于检索的应用
             gridLookUpEdit1.Properties.View.OptionsView.ShowAutoFilterRow = true;
@@ -144,7 +161,7 @@ namespace GridLookUpEdit_FilterWithEditValue
             col1.MinWidth = 80;
 
             // A column
-            //【故意制造不显示】
+            //【故意制造不显示】绑定了字段而不是属性。在转化为datatable时，字段也不转化为列！
             GridColumn col2 = gridLookUpEdit1.Properties.PopupView.Columns.AddField("Address");
             col2.VisibleIndex = 1;
             col2.Caption = "Address";
@@ -167,6 +184,5 @@ namespace GridLookUpEdit_FilterWithEditValue
             gridLookUpEdit1.Properties.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
             gridLookUpEdit1.Properties.View.BestFitColumns();
         }
-
     }
 }

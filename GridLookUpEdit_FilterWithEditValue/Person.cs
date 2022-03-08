@@ -14,6 +14,7 @@ namespace GridLookUpEdit_FilterWithEditValue
         //以下故意设置为字段，而不是属性！
         //字段，绑定时不报错，但也不显示值！
         public string Address;
+        //public string Address { get; set; }
     }
 
     public class SelectPerson
