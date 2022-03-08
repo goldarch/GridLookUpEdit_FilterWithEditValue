@@ -22,7 +22,11 @@ namespace GridLookUpEdit_FilterWithEditValue
         public Form1()
         {
             InitializeComponent();
-            bindingSourcePersons.DataSource =new BindingList<Person>(GetList());
+            //实体测试
+            //bindingSourcePersons.DataSource =new BindingList<Person>(GetList());
+            //database测试
+            bindingSourcePersons.DataSource = GetDataTable();
+
             _selectPersons = new BindingList<SelectPerson>()
             {
                 new SelectPerson() {Id = 2}
@@ -83,10 +87,16 @@ namespace GridLookUpEdit_FilterWithEditValue
             var list = new List<Person>();
             for (int i = 0; i < 20; i++)
             {
-                list.Add(new Person() {Id = i, Address = "Address0" + i, Code = "Code00" + i, Name = "Name000" + i});
+                //list.Add(new Person() {Id = i, Address = "Address" + i, Code = "Code0" + i, Name = "Name" + i});
+                list.Add(new Person() { Id = i, Address = Util.Str(10,true), Code = Util.Str(10, true), Name = "Name"+ Util.Str(5, true) });
             }
 
             return list;
+        }
+
+        DataTable GetDataTable()
+        {
+            return Util.GetDataTable(GetList(), typeof(Person));
         }
 
         private void InitLookUp()
@@ -134,6 +144,7 @@ namespace GridLookUpEdit_FilterWithEditValue
             col1.MinWidth = 80;
 
             // A column
+            //【故意制造不显示】
             GridColumn col2 = gridLookUpEdit1.Properties.PopupView.Columns.AddField("Address");
             col2.VisibleIndex = 1;
             col2.Caption = "Address";
