@@ -64,7 +64,7 @@ namespace GridLookUpEdit_FilterWithEditValue
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(663, 104);
             this.richTextBox1.TabIndex = 1;
-            this.richTextBox1.Text = "这篇文章，不错：\nhttps://www.cnblogs.com/springsnow/p/10191663.html";
+            this.richTextBox1.Text = "这篇文章，不错，不是本人写的\nhttps://www.cnblogs.com/springsnow/p/10191663.html";
             // 
             // pictureBox1
             // 
